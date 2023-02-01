@@ -1,9 +1,10 @@
 const bcrypt = require("bcrypt")
 
-const saltRound = 10
 //Encrypt password
 const hashPassword = async (password)=>{
-    return await bcrypt.hash(password, saltRound)
+    const saltRound = 10
+    const genSalt = bcrypt.genSalt(saltRound)
+    return await bcrypt.hash(password, genSalt)
 }
 
 //Verify password
