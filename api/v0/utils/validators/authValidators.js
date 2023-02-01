@@ -2,28 +2,22 @@ const {body} = require("express-validator")
 const User = require("../../models/User")
 
 const registerValidators = [
-    body("username").exists().withMessage("Username is required!").custom(async(value)=>{
-        const pattern = /^[a-zA-Z]([a-zA-Z0-9_-]{3,})[a-zA-Z0-9]$/
-        const result = pattern.test(value)
-        if(result){
-            try{
-                const user = await User.findOne({username: value});
-                throw new Error("Username already exists");
-            }catch(err){
-                return true;
-            }
-        }else{
-            throw new Error("Username does not match required pattern");
-        }
+    body("username").exists().withMessage("Username is required!")
+        .custom((value)=>{
+            return User.findOne({username: value}).then(user =>{
+                if(user){
+                    return Promise.reject("Username name already in use")
+                }
+            })
     }),
     body("email").exists().withMessage("Email is required!")
-        .isEmail().withMessage("Please enter a valid email!").custom(async(value)=>{
-            try{
-                const user = await User.findOne({email: value});
-                throw new Error("Email already exists");
-            }catch(err){
-                return true;
-            }
+        .isEmail().withMessage("Please enter a valid email!")
+        .custom( value =>{
+            return User.findOne({email: value}).then(user =>{
+                if(user){
+                    return Promise.reject("Username name already in use")
+                }
+            })
         }),
     body("user_password").exists().withMessage("Password is required!")
         .isStrongPassword({
