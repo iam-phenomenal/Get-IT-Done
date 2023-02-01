@@ -50,7 +50,6 @@ const tokenAuthentication = (req, res, next)=>{
 //Verify token belongs to right user
 const tokenVerification = (req, res, next) =>{
     tokenAuthentication(req, res, ()=>{
-        console.log(req.user)
         if(req.user._id === req.params.userid) return next()
         else{
             return res.status(403).json({
