@@ -11,10 +11,10 @@ const login = async(req, res, next)=>{
         return res.status(400).json({error: errors.array()});
     }
     //Get request body
-    const {email, user_password} = req.body
+    const {username, user_password} = req.body
     try{
         //Search user's model by email
-        const user = await User.findOne({email: email})
+        const user = await User.findOne({username: username})
         //If user doesn't exist
         if(!user){
             //Create error
@@ -22,7 +22,7 @@ const login = async(req, res, next)=>{
             return next(error)
         }
         //Verify password
-        const checkPassword = verifyPassword(user_password, user.password)
+        const checkPassword = await verifyPassword(user_password, user.password)
         //If password doesn't match
         if(!checkPassword){
             //Create error
