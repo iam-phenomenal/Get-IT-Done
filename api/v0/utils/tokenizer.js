@@ -1,51 +1,74 @@
-const jwt = require("jsonwebtoken")
-const { createError } = require("./createError")
-require("dotenv").config()
+const jwt = require("jsonwebtoken");
+const { createError } = require("./createError");
+require("dotenv").config();
 
+
+const secret = process.env["JWT_SECRET_KEY"];
+//Sign token after authentication
 const signToken = (user)=>{
-    const accessToken = jwt.sign({
-        id: user._id,
-        admin: user.admin
-    }, process.env["JWT_SECRET_KEY"], {expiresIn: "1h"})
-    return accessToken
+    const accessToken = jwt.sign(user, 
+        secret, 
+        {expiresIn: "1h"});
+    return accessToken;
 }
 
-const tokenResult = (req, res, next)=>{
-    const authHeader = req.headers["authorization"]
+//Token authentication
+const tokenAuthentication = (req, res, next)=>{
+    //Get authorization header from request
+    const authHeader = req.headers["authorization"];
+    //If authorization header exist
     if(authHeader){
-        const token = authHeader.split(" ")[1]
-        jwt.verify(token, process.env.JWT_SECRET_KEY, (err, user)=>{
-            if(err){
-                const error = createError(401, "Authentication failed")
-                return next(error)
-            }
-            req.user = user
-            return next()
-        })
+        //Split header to get token
+        const tokenBearer = authHeader.split(" ");
+        //Authorization header is malformed
+        if(tokenBearer.length != 2){
+            return res.status(401).json({
+                error: "Malformed token"
+            });
+        }else{
+            //Get token
+            const token = tokenBearer[1];
+            //Verify token
+            return jwt.verify(token, secret, (err, decoded)=>{
+                if(err){
+                    return res.status(401).json({
+                        error: "Authentication failed"
+                    });
+                }
+                req.user = decoded
+                return next();
+            })
+        }
     }else{
-        const error = createError(401, "Authentication failed")
-        return next(error)
+        return res.status(401).json({
+            error: "Missing authorization header"
+        });
     }
+
 }
 
-const tokenAuthentication = (req, res, next) =>{
-    this.tokenResult(req, res, ()=>{
-        if(req.user.id === req.params.userid) return next()
+//Verify token belongs to right user
+const tokenVerification = (req, res, next) =>{
+    tokenAuthentication(req, res, ()=>{
+        console.log(req.user)
+        if(req.user._id === req.params.userid) return next()
         else{
-            const error = createError(401, "Authentication failed")
-            return next(error)
+            return res.status(403).json({
+                error: "Permission denied"
+            });
         }
     })
 }
 
 const adminVerification = (req, res, next) => {
-    this.tokenResult(req, res, ()=>{
-        if((req.user.id === req.params.userid) && req.user.admin) return next()
+    tokenResult(req, res, ()=>{
+        if((req.user._id === req.params.userid) && req.user.admin) return next()
         else{
-            const error = createError(403, "Permission denied")
-            return next(error)
+            return res.status(403).json({
+                error: "Permission denied"
+            });
         }
     })
 }
 
-module.exports = {signToken, tokenResult, tokenAuthentication, adminVerification}
+module.exports = {signToken, tokenVerification, adminVerification}
