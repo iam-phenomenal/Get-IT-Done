@@ -1,0 +1,37 @@
+{
+  "name": "get-it-done",
+  "version": "1.0.0",
+  "description": "A ready to go task manager rest api",
+  "main": "server.js",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "test": "jest --watchAll"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://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@github.com/iam-phenomenal/Get-IT-Done.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/iam-phenomenal/Get-IT-Done/issues"
+  },
+  "homepage": "https://github.com/iam-phenomenal/Get-IT-Done#readme",
+  "dependencies": {
+    "bcrypt": "^5.1.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-validator": "^6.14.3",
+    "helmet": "^6.0.1",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^6.8.3",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "jest": "^29.4.1",
+    "nodemon": "^2.0.20",
+    "supertest": "^6.3.3"
+  }
+}
