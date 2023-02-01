@@ -32,7 +32,7 @@ const login = async(req, res, next)=>{
         //Destructing user credentials
         const {password, ...others} = user._doc
         //Assign token
-        const accessToken = signToken(user)
+        const accessToken = signToken(user.toJSON())
         //Output succesful login
         return res.status(200).json({
             message: "Login successful",
@@ -72,7 +72,7 @@ const register = async(req, res, next)=>{
         //Seperate password from user credentials
         const {password, ...others} = savedUser._doc;
         //Sign token
-        const accessToken = signToken(savedUser);
+        const accessToken = signToken(savedUser.toJSON());
         //Output result
         return res.status(201).json({
             message: "Registration successful",
