@@ -2,6 +2,7 @@ const User = require("../models/User");
 const Task = require("../models/Task");
 const { createError } = require("../utils/createError");
 const { hashPassword } = require("../utils/hasher");
+const {validationResult} = require("express-validator");
 
 //Get indie user
 const getUser = async (req, res, next)=>{
@@ -18,10 +19,11 @@ const getUser = async (req, res, next)=>{
             //Send error
             return next(error);
         }
-        //Ouptut user
+        //Destruct user
+        const {password, ...others} = user._doc
         return res.status(200).json({
             message: "User Fetched",
-            output: user
+            userInfo: others
         })
     }catch(err){
         //Send internal server error
@@ -40,9 +42,9 @@ const updateUser = async(req, res, next)=>{
     }
     try{
         //If password is to be updated
-        if(req.body.password){
+        if(req.body.user_password){
             //Hashpassword
-            const hashedPassword = await hashPassword(req.body.password)
+            const hashedPassword = await hashPassword(req.body.user_password)
             //Update request password body
             req.body.password = hashedPassword
         }
@@ -71,14 +73,10 @@ const deleteUser = async(req, res, next)=>{
     try{
         //Search and delete user by id
         await User.findByIdAndDelete(userid);
+        //Delete user's tasks
+        await Task.deleteMany({username: req.user.username})
+        //Blacklist user token
         //Output success
-        return res.status(200).json({
-            message: "User profile has been deleted",
-            next: {
-                message: "Delete user's task",
-                url: ""
-            }
-        });
     }catch(err){
         err.message = "Error deleting user profile";
         return next(err);
