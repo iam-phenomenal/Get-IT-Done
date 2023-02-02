@@ -1,14 +1,14 @@
 const router = require("express").Router()
 const {getUser, updateUser, deleteUser, getStats} = require("../controllers/userController")
-const {tokenAuthentication} = require("../utils/tokenizer")
+const {tokenVerification} = require("../utils/tokenizer")
 const { updateValidator } = require("../utils/validators/userValidators")
 
-router.get("/", tokenAuthentication, getUser)
+router.get("/:userid", tokenVerification, getUser)
 
-router.put("/", updateValidator, tokenAuthentication, updateUser)
+router.put("/:userid", updateValidator, tokenVerification, updateUser)
 
-router.delete("/", tokenAuthentication, deleteUser)
+router.delete("/:userid", tokenVerification, deleteUser)
 
-router.get("/stats", tokenAuthentication, getStats)
+router.get("/stats", tokenVerification, getStats)
 
 module.exports = router
