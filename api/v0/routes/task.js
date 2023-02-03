@@ -1,17 +1,18 @@
 const router = require("express").Router()
 const {createTask, getTasks, updateTasks, deleteTasks} = require("../controllers/taskController")
-const {tokenAuthentication} = require("../utils/tokenizer")
+const {tokenVerification} = require("../utils/tokenizer")
+const{createTaskValidator, updateTaskValidator} = require("../utils/validators/taskValidators")
 
 //Create task
-router.post("", tokenAuthentication, createTask)
+router.post("/:userid", tokenVerification, createTaskValidator, createTask)
 
 //Get task
-router.get("", tokenAuthentication, getTasks)
+router.get("/:userid", tokenVerification, getTasks)
 
 //Update task
-router.put("/:taskid", tokenAuthentication, updateTasks)
+router.put("/:userid", tokenVerification, updateTaskValidator, updateTasks)
 
 //Delete task
-router.delete("/:taskid", tokenAuthentication, deleteTasks)
+router.delete("/:userid", tokenVerification, deleteTasks)
 
 module.exports = router
