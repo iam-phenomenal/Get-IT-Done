@@ -1,8 +1,8 @@
 const { getUser} = require("../controllers/userController")
-const {getAllUser, revokeUser, updatePermission, adminRegister}=
+const {getAllUser, revokeUser, updatePermission}=
     require("../controllers/adminController");
 const {adminVerification} = require("../utils/tokenizer")
-const {} = require("../utils/validators/userValidators")
+const {updateValidator, usernameValidator} = require("../utils/validators/adminValidators")
 
 const router = require("express").Router()
 
@@ -10,15 +10,12 @@ const router = require("express").Router()
 router.get("/:userid",adminVerification, getUser)
 
 //Fetch other users
-router.get("/users",adminVerification, getAllUser)
+router.get("/:userid/users",adminVerification, getAllUser)
 
 //Update user permission
-router.put("/users", adminVerification, updatePermission)
+router.put("/:userid/users", updateValidator, adminVerification, updatePermission)
 
 //Revoke user
-router.delete("/users", adminVerification, revokeUser)
-
-//Register account
-router.post("/auth", adminRegister)
+router.delete("/:userid/users", usernameValidator, adminVerification, revokeUser)
 
 module.exports = router
