@@ -1,10 +1,7 @@
-const paginateResult = async (_Model, limit=10, page=1)=>{
+const paginateResult = async (_Model,startIndex, endIndex, limit=10, page=1)=>{
     //Setting pagination constraint
-    var startIndex = (page - 1)*limit;
-    var endIndex = page * limit;
-
     const paginationInfo = {};
-    if(endIndex < await _Model.countDocuments().exec()){
+    if(endIndex < await _Model.length){
         paginationInfo.next = {
             page: page + 1,
             limit: limit
@@ -16,6 +13,7 @@ const paginateResult = async (_Model, limit=10, page=1)=>{
             limit: limit
         }
     }
-
-    return {paginationInfo, startIndex}
+    return paginationInfo
 }
+
+module.exports = {paginateResult}
