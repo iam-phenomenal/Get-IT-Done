@@ -4,6 +4,7 @@ const {json, urlencoded} = require("express");
 const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
+const jwt = require("jsonwebtoken")
 
 const { createError } = require("../api/v0/utils/createError");
 
@@ -13,32 +14,35 @@ const authRoute = require("../api/v0/routes/auth");
 const userRoute = require("../api/v0/routes/user");
 const taskRoute = require("../api/v0/routes/task");
 const adminRoute = require("../api/v0/routes/admin");
+const categoryRoute = require("../api/v0/routes/categories");
+
 //Import database connection
-const db = require("./database")
+const db = require("./database");
 
 //Initialize database connection
-db.on("error", (error)=>console.error(error))
-db.once("open", ()=> console.log("Database connected"))
+db.on("error", (error)=>console.error(error));
+db.once("open", ()=> console.log("Database connected"));
 
 //Instantiate express
-const app = express()
+const app = express();
 
-app.use(json())
-app.use(urlencoded({extended: false}))
+app.use(json());
+app.use(urlencoded({extended: false}));
 
-app.use(cors())
-app.use(helmet())
-app.use(morgan("common"))
+app.use(cors());
+app.use(helmet());
+app.use(morgan("common"));
 
-app.use("/api/v0", indexRoute)
-app.use("/api/v0/auth", authRoute)
-app.use("/api/v0/user", userRoute)
-app.use("/api/v0/task/:userid", taskRoute)
-app.use("/api/v0/admin/:userid", adminRoute)
+//Routing requests
+app.use("/api/v0/auth", authRoute);
+app.use("/api/v0/user", userRoute);
+app.use("/api/v0/task", taskRoute);
+app.use("/api/v0/admin", adminRoute);
+app.use("/api/v0/category", categoryRoute)
 
 app.get("/logout", (req, res)=>{
     // Destory JWT Token
-    jwt.destroy(req.header["Authorization"][1], (err) => {
+    jwt.destroy(req.header["authorization"][1], (err) => {
         if(err) {
             const error = createError(500, err.message)
             return next(error)
@@ -47,12 +51,12 @@ app.get("/logout", (req, res)=>{
             message: "User logged out successfully"
         });
     })
-})
+});
 
 app.use((req, res, next)=>{
     const error =  createError(404, "Page not found")
     return next(error)
-})
+});
 
 app.use((error, req, res)=>{
     if(error.status == 400){
@@ -68,6 +72,6 @@ app.use((error, req, res)=>{
             }
         })
     }
-})
+});
 
-module.exports = app
+module.exports = app;
