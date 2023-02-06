@@ -1,5 +1,4 @@
 const jwt = require("jsonwebtoken");
-const { createError } = require("./createError");
 require("dotenv").config();
 
 
@@ -8,7 +7,7 @@ const secret = process.env["JWT_SECRET_KEY"];
 const signToken = (user)=>{
     const accessToken = jwt.sign(user, 
         secret, 
-        {expiresIn: "1h"});
+        {expiresIn: "6h"});
     return accessToken;
 }
 
@@ -35,7 +34,7 @@ const tokenAuthentication = (req, res, next)=>{
                         error: "Authentication failed"
                     });
                 }
-                req.user = decoded
+                req.user = decoded;
                 return next();
             })
         }
@@ -59,9 +58,10 @@ const tokenVerification = (req, res, next) =>{
     })
 }
 
+//Admin verification
 const adminVerification = (req, res, next) => {
-    tokenResult(req, res, ()=>{
-        if((req.user._id === req.params.userid) && req.user.admin) return next()
+    tokenAuthentication(req, res, ()=>{
+        if((req.user._id === req.params.userid) && req.user.admin) return next();
         else{
             return res.status(403).json({
                 error: "Permission denied"
@@ -70,4 +70,9 @@ const adminVerification = (req, res, next) => {
     })
 }
 
-module.exports = {signToken, tokenVerification, adminVerification}
+//Destroy token
+const destroyToken = ()=>{
+
+}
+
+module.exports = {signToken, tokenVerification, adminVerification};
