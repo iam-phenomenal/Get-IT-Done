@@ -2,7 +2,7 @@ const {query, body} = require("express-validator")
 const User = require("../../models/User")
 
 const updateValidator = [
-    query("username").exists().withMessage("Username is required").custom((value)=>{
+    body("username").exists().withMessage("Username is required").custom((value)=>{
         return User.findOne({username: value}).then(user =>{
             if(!user){
                 return Promise.reject("Username not found");
