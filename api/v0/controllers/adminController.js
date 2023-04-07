@@ -48,19 +48,19 @@ const revokeUser = async (req, res) => {
 		return res.status(400).json({ error: errors.array() });
 	}
 	//Destruct request query
-	const { username } = req.query;
+	const { username } = req.body;
 	try {
 		//Find and delete user
 		const user = await User.findOneAndDelete({ username: username });
-		const userTask = await Task.deleteMany({ username: username });
-		if (!userTask) {
+		if (!user) {
 			return res
-				.status(200)
-				.json({ message: "User has been deleted with no tasks found" });
+				.status(400)
+				.json({ message: "User not found" });
 		} else {
+            await Task.deleteMany({ username: username });
 			return res
 				.status(200)
-				.json({ message: "User and user's tasks has been deleted" });
+				.json({ message: "User has been deleted" });
 		}
 	} catch (err) {
 		return res.status(500).json({ error: err.message });
