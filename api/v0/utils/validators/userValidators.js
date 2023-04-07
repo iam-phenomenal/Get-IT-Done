@@ -22,6 +22,9 @@ const updateValidator = [
         }catch(err){
             return true;
         }
+    }),
+    body("admin").optional({checkFalsy: true}).custom(()=> {
+        throw new Error("Admin status is immutable")
     })
 ]
 module.exports = {updateValidator}
