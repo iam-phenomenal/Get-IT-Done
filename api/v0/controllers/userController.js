@@ -22,7 +22,7 @@ const getUser = async (req, res, next)=>{
         //Destruct user
         const {password, ...others} = user._doc
         return res.status(200).json({
-            message: "User Fetched",
+            message: "User Profile",
             userInfo: others
         })
     }catch(err){
@@ -75,8 +75,10 @@ const deleteUser = async(req, res, next)=>{
         await User.findByIdAndDelete(userid);
         //Delete user's tasks
         await Task.deleteMany({username: req.user.username})
-        //Blacklist user token
         //Output success
+        return res.status(200).json({
+            message: "User has been deleted"
+        })
     }catch(err){
         err.message = "Error deleting user profile";
         return next(err);
