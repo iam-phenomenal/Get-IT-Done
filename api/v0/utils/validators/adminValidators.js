@@ -1,4 +1,4 @@
-const { query, body } = require("express-validator");
+const { body } = require("express-validator");
 const User = require("../../models/User");
 
 const updateValidator = [

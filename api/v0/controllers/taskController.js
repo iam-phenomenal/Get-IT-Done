@@ -9,25 +9,25 @@ const createTask = async(req, res, next)=>{
         return res.status(400).json({error: errors.array()});
     }
     //Destruct request body
-    const {task_name, category, weight, desc, 
+    const {task, category, weight, desc, 
         deadline, notification_method} = req.body;
     const {username} = req.user;
     try{
         //Create new task model
         const newTask = new Task({
             username: username,
-            task_name: task_name,
+            task: task,
             desc: desc,
             weight: weight,
             category: category,
-            deadline: deadline,
+            deadline: new Date(deadline).toDateString(),
             notification_method: notification_method
         });
         //Save task
         const saveTask = await newTask.save();
         //Output saved task
         return res.status(201).json({
-            message: "New Task has been created",
+            message: `${task} has been created`,
             output: saveTask
         });
     }catch(err){
@@ -84,33 +84,33 @@ const deleteTasks = async(req, res, next)=>{
 }
 
 const getTasks = async(req, res, next)=>{
+    let {task, category,completed, recent, limit, page} = req.query
+    // limit = parseInt(limit), page = parseInt(page)
+    // var startIndex = (page - 1)*limit;
+    console.log(recent)
     try{
-        let {task_name, category,completion, recent, limit, page} = req.query
-        limit = parseInt(limit), page = parseInt(page)
-        var startIndex = (page - 1)*limit;
-        let tasks;
-        if(task_name){   
-            tasks = await Task.findOne({username: username, task_name: task_name});
-        }else if(recent){
-            tasks = await Task.find({username: username}).sort({$natural: -1})
-            .select("task_name category status deadline").limit(limit).skip(startIndex);
+        const {username} = req.user
+        let tasks; 
+        if(task){   
+            tasks = await Task.findOne({username: username, task: task});
+        }else if(recent==="true"){
+            console.log(recent)
+            tasks = await Task.find({username: username})
+            .select("task category status deadline  createdAt");
         }else if(category){
             tasks = await Task.find({username: username, category: category})
-            .select("task_name category status deadline").limit(limit).skip(startIndex);
-        }else if(completion){
-            tasks = await Task.find({username: username, status: completion})
-            .select("task_name category status deadline").limit(limit).skip(startIndex);
+            .select("task category status deadline createdAt");
+        }else if(completed){
+            tasks = await Task.find({username: username, status: completed})
+            .select("task category status deadline createdAt");
         }else{
             tasks = await Task.find({username: username})
-            .select("task_name category status deadline").limit(limit).skip(startIndex);
+            .select("task category status deadline createdAt");
         }
-        if(!tasks){
-            return res.status(200).json({
-                message: "No task found",
-            });
-        }
+        // const count = tasks.length
         return res.status(200).json({
-            message: "Tasks found",
+            message: "Search Result",
+            // count: count,
             output: tasks
         });
     }catch(err){
