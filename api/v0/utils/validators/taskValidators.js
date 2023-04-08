@@ -12,7 +12,7 @@ const createTaskValidator = [
 		.custom((value, { req }) => {
 			return Task.findOne({
 				username: req.user.username,
-				task_name: value,
+				task: value,
 			}).then((task) => {
 				if (task) {
 					return Promise.reject("Task name already in use");

@@ -1,5 +1,5 @@
 const Task = require("../models/Task");
-const {paginateResult} = require("../utils/pagination");
+// const {paginateResult} = require("../utils/pagination");
 const {validationResult} = require("express-validator");
 
 const createTask = async(req, res, next)=>{
@@ -47,7 +47,7 @@ const updateTasks = async(req, res, next)=>{
     const {task} = req.query
     try{
         //Find task by username and task name
-        const updatedTask = await Task.findOneAndUpdate({username: username, task_name: task}, {
+        const updatedTask = await Task.findOneAndUpdate({username: username, task : task}, {
             $set: req.body
         }, {new: true});
         //Task not updated due to invalid taskname
@@ -72,7 +72,7 @@ const deleteTasks = async(req, res, next)=>{
         if(!task){
            return res.status(400).json({error: "Task is requied"});
         }else{
-            const deletedTask = await Task.findOneAndDelete({username: username, task_name: task})
+            const deletedTask = await Task.findOneAndDelete({username: username, task: task})
             if(!deletedTask){
                 return res.status(422).json({error: "Task not found"});
             }
@@ -87,7 +87,6 @@ const getTasks = async(req, res, next)=>{
     let {task, category,completed, recent, limit, page} = req.query
     // limit = parseInt(limit), page = parseInt(page)
     // var startIndex = (page - 1)*limit;
-    console.log(recent)
     try{
         const {username} = req.user
         let tasks; 
