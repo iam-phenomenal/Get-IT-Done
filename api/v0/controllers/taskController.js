@@ -84,29 +84,24 @@ const deleteTasks = async(req, res, next)=>{
 }
 
 const getTasks = async(req, res, next)=>{
-    let {task, category,completed, recent, limit, page} = req.query
-    // limit = parseInt(limit), page = parseInt(page)
-    // var startIndex = (page - 1)*limit;
+    let {task, category,completed, recent} = req.query
+    
     try{
         const {username} = req.user
+        let searchParams = {username: username}
         let tasks; 
         if(task){   
-            tasks = await Task.findOne({username: username, task: task});
-        }else if(recent==="true"){
-            console.log(recent)
-            tasks = await Task.find({username: username})
-            .select("task category status deadline  createdAt");
-        }else if(category){
-            tasks = await Task.find({username: username, category: category})
-            .select("task category status deadline createdAt");
-        }else if(completed){
-            tasks = await Task.find({username: username, status: completed})
-            .select("task category status deadline createdAt");
-        }else{
-            tasks = await Task.find({username: username})
-            .select("task category status deadline createdAt");
+            searchParams.task = task
         }
-        // const count = tasks.length
+        if(category){
+            searchParams.category = category
+        }
+        if(completed){
+            searchParams.completed = completed
+        }
+
+        tasks = await Task.find(searchParams).select("task category status deadline createdAt");
+        const count = tasks.length
         return res.status(200).json({
             message: "Search Result",
             // count: count,

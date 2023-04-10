@@ -137,4 +137,4 @@ const getTaskValidator = [
 		.withMessage("Page should be a number"),
 ];
 
-module.exports = { createTaskValidator, updateTaskValidator, getTaskValidator };
+module.exports = { createTaskValidator, updateTaskValidator, getTaskValidator};
