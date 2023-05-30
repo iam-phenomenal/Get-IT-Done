@@ -15,6 +15,7 @@ const userRoute = require("../api/v0/routes/user");
 const taskRoute = require("../api/v0/routes/task");
 const adminRoute = require("../api/v0/routes/admin");
 const categoryRoute = require("../api/v0/routes/categories");
+const statsRoute = require("../api/v0/routes/stats")
 
 //Import database connection
 const db = require("./database");
@@ -33,24 +34,24 @@ app.use(cors());
 app.use(helmet());
 app.use(morgan("common"));
 
+
 //Routing requests
 app.use("/api/v0/auth", authRoute);
 app.use("/api/v0/user", userRoute);
 app.use("/api/v0/task", taskRoute);
 app.use("/api/v0/admin", adminRoute);
 app.use("/api/v0/category", categoryRoute)
-
+app.use("/api/v0/stats", statsRoute)
+ 
 app.get("/logout", (req, res)=>{
-    // Destory JWT Token
-    jwt.destroy(req.header["authorization"][1], (err) => {
-        if(err) {
-            const error = createError(500, err.message)
-            return next(error)
-        }
-        return res.status(200).json({
-            message: "User logged out successfully"
-        });
-    })
+    // Log user out
+    try{
+        console.log(req.header["authorization"][1])
+        req.header["authorization"] = null
+        // console.log(req.header["authorization"])
+    }catch(err){
+        return res.status(500).json({error: err.message})
+    }
 });
 
 app.use((req, res, next)=>{
